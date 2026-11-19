@@ -6,6 +6,18 @@ This project was primarily created to support [the main LumexUI project](https:/
 
 If you choose to explore or contribute, please be aware that stability is not guaranteed, and updates may be infrequent or focused on specific needs.
 
+## About this fork
+
+This is a maintained fork of [LumexUI/lumexui-motion](https://github.com/LumexUI/lumexui-motion), which is no longer developed. The main change: the `motion` library is bundled into the package's static assets instead of being imported from a CDN at runtime, so apps work offline and under a strict Content-Security-Policy.
+
+Packages are published to GitHub Packages. Add the feed (restoring needs a GitHub token with `read:packages`):
+
+```shell
+dotnet nuget add source "https://nuget.pkg.github.com/chrismeller/index.json" --name chrismeller --username <github-user> --password <token>
+```
+
+To change the JavaScript, edit `src/Scripts/`, then run `pnpm install` and `pnpm build` and commit the regenerated `src/wwwroot/motion.js`.
+
 ## Installation
 
 1. Register the service in the DI:

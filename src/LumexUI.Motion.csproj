@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
 	<PropertyGroup>
-		<TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+		<TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 	</PropertyGroup>
@@ -9,15 +9,15 @@
 	<PropertyGroup>
 		<Title>LumexUI.Motion</Title>
 		<Description>A Blazor wrapper for the Motion library.</Description>
-		<Version>0.0.4</Version>
-		<Authors>desmondinho</Authors>
+		<Version>0.1.0</Version>
+		<Authors>desmondinho;chrismeller</Authors>
 		<PackageId>LumexUI.Motion</PackageId>
 		<!--<PackageIcon>logo.png</PackageIcon>-->
 		<PackageTags>blazor;motion;components;library;</PackageTags>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<PackageProjectUrl>https://github.com/LumexUI/lumexui-motion</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/LumexUI/lumexui-motion</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/chrismeller/lumexui-motion</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/chrismeller/lumexui-motion</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 	</PropertyGroup>
 
@@ -38,11 +38,15 @@
 	</ItemGroup>
 
 	<ItemGroup Condition=" '$(TargetFramework)' == 'net8.0' ">
-		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.11" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.34" />
 	</ItemGroup>
 
 	<ItemGroup Condition=" '$(TargetFramework)' == 'net9.0' ">
-		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.1" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.23" />
+	</ItemGroup>
+
+	<ItemGroup Condition=" '$(TargetFramework)' == 'net10.0' ">
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.15" />
 	</ItemGroup>
 
 </Project>
