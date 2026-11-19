@@ -16,7 +16,7 @@ Packages are published to GitHub Packages. Add the feed (restoring needs a GitHu
 dotnet nuget add source "https://nuget.pkg.github.com/chrismeller/index.json" --name chrismeller --username <github-user> --password <token>
 ```
 
-To change the JavaScript, edit `src/Scripts/`, then run `pnpm install` and `pnpm build` and commit the regenerated `src/wwwroot/motion.js`.
+The JavaScript lives in `src/Scripts/`. `dotnet build` bundles it into `src/wwwroot/motion.js` with rollup (not committed), so building needs Node and pnpm: `mise install` sets them up.
 
 ## Installation
 

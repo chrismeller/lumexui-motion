@@ -18,18 +18,7 @@ jobs:
       - name: Setup mise
         uses: jdx/mise-action@236a21c3b91f5db6d4e174b348674a0f0caac06d # v5
 
-      - name: Bundle the motion module
-        run: |
-          pnpm install --frozen-lockfile
-          pnpm build
-
-      - name: Check the committed bundle is current
-        run: |
-          if ! git diff --exit-code -- src/wwwroot; then
-            echo "::error::src/wwwroot/motion.js is out of date. Run 'pnpm build' and commit the result."
-            exit 1
-          fi
-
+      # Also installs the JS dependencies and bundles wwwroot/motion.js (see the csproj).
       - name: Build
         run: dotnet build src/LumexUI.Motion.csproj -c Release
 
