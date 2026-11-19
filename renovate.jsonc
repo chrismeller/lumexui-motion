@@ -1,0 +1,110 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:best-practices",
+
+    // includes the OpenSSF scorecard badge in the PR description and checks the scorecard score for the dependency
+    "security:openssf-scorecard",
+
+    ":combinePatchMinorReleases",
+
+    // includes updates to GitHub Actions, e.g. `uses: actions/checkout@v3`
+    "customManagers:githubActionsVersions",
+
+    // automerge all non-major updates, but only if all status checks pass
+    ":automergePr"
+  ],
+
+  // enable GitHub's built-in vulnerability alerts, which are based on the GitHub Advisory Database and can include vulnerabilities that aren't in the OSV database yet
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "labels": ["security"]
+  },
+
+  // enable OSV vulnerability alerts, which are based on the Open Source Vulnerabilities (OSV) database and can include vulnerabilities that aren't in GitHub's database yet
+  "osvVulnerabilityAlerts": true,
+
+  // include a summary of all OSV vulnerabilities in the dependency dashboard, even if they don't have a fix version yet
+  "dependencyDashboardOSVVulnerabilitySummary": "all",
+
+  // require manual approval for major updates, which are more likely to include breaking changes
+  "major": {
+    "dependencyDashboardApproval": true
+  },
+
+  // only include updates that have been released for at least 3 days, so a broken release has time to be pulled or fixed first
+  "minimumReleaseAge": "3 days",
+
+  // use the "strict" internal checks filter, which helps prevent PR flapping between versions
+  "internalChecksFilter": "strict",
+
+  // labels to apply to all PRs created by Renovate
+  "labels": [
+    "dependencies"
+  ],
+
+  // release-please cuts releases from conventional commits, so every Renovate PR title and commit is
+  // "deps: …", which release-please releases as a patch under "Dependency Updates".
+  "semanticCommits": "enabled",
+  "semanticCommitType": "deps",
+  "semanticCommitScope": null,
+
+  // mise's bare `dotnet` tool is invisible to Renovate's `mise` manager (it isn't in Renovate's mise
+  // tooling table), so extract the pin as the same dep global.json's `sdk.version` is ("dotnet-sdk" /
+  // "dotnet-version") and the .NET SDK group below bumps both in one PR. The `(?:^|\n)` anchor keeps it
+  // off prefixed tools and off the word "dotnet" in comments.
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "mise's bare `dotnet` pin — unsupported by the mise manager, so extract it as dotnet-sdk",
+      "managerFilePatterns": [
+        "/(^|/)mise(\\.[^/]+)?\\.toml$/"
+      ],
+      "matchStrings": [
+        "(?:^|\\n)dotnet\\s*=\\s*\"(?<currentValue>[^\"]+)\""
+      ],
+      "depNameTemplate": "dotnet-sdk",
+      "datasourceTemplate": "dotnet-version"
+    }
+  ],
+  "packageRules": [
+    // The SDK pin lives in global.json and mise.toml; a mismatch breaks the build, so they move together.
+    {
+      "description": "Group the .NET SDK pins in global.json and mise.toml into one PR",
+      "groupName": ".NET SDK",
+      "matchDepNames": ["/^(dotnet|dotnet-sdk)$/"],
+      "matchManagers": ["nuget", "mise", "custom.regex"]
+    },
+    // The package targets several frameworks, and each target framework references the framework packages
+    // of its own major (8.0.x for net8.0, 9.0.x for net9.0, ...). A major bump would point an older target at
+    // a newer framework, so only take minor and patch updates for them.
+    {
+      "description": "Keep each target framework's Microsoft.AspNetCore/Extensions packages on its own major",
+      "matchManagers": ["nuget"],
+      "matchPackageNames": ["/^Microsoft\\.(AspNetCore|Extensions)\\./"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    },
+    // Rollup and its plugins are only build tooling for the motion bundle; one PR for all of them.
+    {
+      "description": "Group Rollup and its plugins into one PR",
+      "groupName": "Rollup",
+      "matchPackageNames": ["rollup", "@rollup/**"]
+    },
+    {
+      "description": "Auto-merge non-major GitHub Actions updates when ready",
+      "matchManagers": ["github-actions"],
+      "minimumReleaseAge": null,
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "automerge": true,
+      "automergeType": "pr"
+    },
+    // Last, so it beats the fix/chore split config:best-practices applies through its own packageRules.
+    {
+      "description": "Title every update deps: for release-please",
+      "matchPackageNames": ["*"],
+      "semanticCommitType": "deps",
+      "semanticCommitScope": null
+    }
+  ]
+}
