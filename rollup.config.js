@@ -4,7 +4,7 @@ import replace from '@rollup/plugin-replace';
 import terser from '@rollup/plugin-terser';
 
 // Bundles the interop module with the parts of `motion` it uses, so the browser never fetches
-// the library from a CDN. The output is committed: building the .NET package doesn't need Node.
+// the library from a CDN. dotnet build runs this (see src/LumexUI.Motion.csproj); the output isn't committed.
 export default defineConfig({
     input: 'src/Scripts/motion.js',
     output: {

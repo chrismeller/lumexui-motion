@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
 	<PropertyGroup>
 		<TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
@@ -47,6 +47,48 @@
 
 	<ItemGroup Condition=" '$(TargetFramework)' == 'net10.0' ">
 		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.15" />
+	</ItemGroup>
+
+	<!--
+		Bundles src/Scripts with the parts of `motion` it uses into wwwroot/motion.js, so the browser never fetches
+		the library from a CDN. The bundle is generated, not committed, so building this project needs Node and
+		pnpm (mise.toml). It runs before the build so the static web assets pick the file up.
+	-->
+	<PropertyGroup>
+		<JsRoot>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)/..'))</JsRoot>
+		<MotionBundle>wwwroot/motion.js</MotionBundle>
+	</PropertyGroup>
+
+	<Target Name="PnpmInstall" Condition="!Exists('$(JsRoot)/node_modules')">
+		<Exec Command="pnpm install --frozen-lockfile" WorkingDirectory="$(JsRoot)" />
+	</Target>
+
+	<Target Name="BundleMotionCore"
+			DependsOnTargets="PnpmInstall"
+			Inputs="@(MotionScript);$(JsRoot)/package.json;$(JsRoot)/pnpm-lock.yaml;$(JsRoot)/rollup.config.js"
+			Outputs="$(MotionBundle)">
+		<Exec Command="pnpm build" WorkingDirectory="$(JsRoot)" />
+	</Target>
+
+	<!--
+		Each target framework builds in parallel. Calling the bundle step on the project without a TargetFramework
+		gives every inner build the same project instance, so MSBuild runs it once and the others wait for it.
+	-->
+	<Target Name="BundleMotion" BeforeTargets="BeforeBuild" Condition="'$(DesignTimeBuild)' != 'true'">
+		<MSBuild Projects="$(MSBuildProjectFullPath)" Targets="BundleMotionCore" RemoveProperties="TargetFramework" />
+	</Target>
+
+	<!-- Make sure a bundle that didn't exist when the project was evaluated is still a static web asset. -->
+	<Target Name="IncludeMotionBundle" AfterTargets="BundleMotion" Condition="'$(DesignTimeBuild)' != 'true'">
+		<ItemGroup>
+			<Content Remove="$(MotionBundle)" />
+			<Content Include="$(MotionBundle)" />
+		</ItemGroup>
+	</Target>
+
+	<ItemGroup>
+		<MotionScript Include="Scripts/**/*.js" />
+		<None Remove="Scripts/**" />
 	</ItemGroup>
 
 </Project>
