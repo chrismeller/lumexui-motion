@@ -1,0 +1,5 @@
+[tools]
+dotnet = "10.0.404"
+# Node and pnpm build the bundled src/wwwroot/motion.js (pnpm build).
+node = "26.13.1"
+pnpm = "10.28.0"

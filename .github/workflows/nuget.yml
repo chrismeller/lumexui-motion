@@ -1,28 +1,28 @@
-name: Publish to NuGet
+name: Publish to GitHub Packages
 
 on:
   release:
     types: [published]
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   publish:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./src
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: | 
-          8.0.x
-          9.0.x
+      - name: Setup mise
+        uses: jdx/mise-action@236a21c3b91f5db6d4e174b348674a0f0caac06d # v5
 
-    - name: Create NuGet package
-      run: dotnet pack -c Release --output nupkgs
+      - name: Create NuGet package
+        run: dotnet pack src/LumexUI.Motion.csproj -c Release --output nupkgs
 
-    - name: Push to NuGet
-      run: dotnet nuget push nupkgs/*.nupkg -k ${{secrets.NUGET_TOKEN}} -s https://api.nuget.org/v3/index.json
+      - name: Push to GitHub Packages
+        run: >-
+          dotnet nuget push "nupkgs/*.nupkg"
+          --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
+          --api-key "${{ secrets.GITHUB_TOKEN }}"
