@@ -60,7 +60,7 @@ jobs:
 
       # The .NET SDK, Node and pnpm (mise.toml); the build bundles wwwroot/motion.js.
       - name: Setup mise
-        uses: jdx/mise-action@236a21c3b91f5db6d4e174b348674a0f0caac06d # v5
+        uses: jdx/mise-action@90f833d396d0cc3674b631d2d225e306476c303a # v5
 
       - name: Pack LumexUI.Motion
         run: dotnet pack src/LumexUI.Motion.csproj -c Release --output nupkgs
