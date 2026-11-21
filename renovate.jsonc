@@ -25,7 +25,9 @@
   "osvVulnerabilityAlerts": true,
 
   // include a summary of all OSV vulnerabilities in the dependency dashboard, even if they don't have a fix version yet
-  "dependencyDashboardOSVVulnerabilitySummary": "all",
+  "dependencyDashboard": {
+    "osvVulnerabilitySummary": "all"
+  },
 
   // require manual approval for major updates, which are more likely to include breaking changes
   "major": {
