@@ -106,10 +106,16 @@
     // What ships: the package references of the library itself (not tests or tooling), and the npm runtime
     // dependencies that Rollup bundles into wwwroot/motion.js. Rollup and its plugins, the SDK, pnpm, mise tools
     // and GitHub Actions only build it.
+    //
+    // The branch prefixes keep shipped updates out of branches shared with non-shipped ones. When a branch mixes
+    // types, Renovate titles it by its own ranking (chore < ci < build < fix < feat), and deps isn't on that list, so
+    // a group spanning src/ and tests/ (the dotnet monorepo group, say) would be titled chore(deps): and
+    // release-please would never release the shipped bump.
     {
       "description": "Title updates to shipped dependencies deps:, so release-please releases them",
       "matchFileNames": ["src/**/*.csproj"],
       "matchManagers": ["nuget"],
+      "additionalBranchPrefix": "nupkg-",
       "semanticCommitType": "deps",
       "semanticCommitScope": null
     },
@@ -117,6 +123,7 @@
       "description": "Title updates to the bundled npm runtime dependencies deps:, so release-please releases them",
       "matchManagers": ["npm"],
       "matchDepTypes": ["dependencies"],
+      "additionalBranchPrefix": "bundle-",
       "semanticCommitType": "deps",
       "semanticCommitScope": null
     }
