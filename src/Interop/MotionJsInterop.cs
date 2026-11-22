@@ -17,30 +17,42 @@ public class MotionJsInterop : IAsyncDisposable
             "import", "./_content/LumexUI.Motion/motion.js" ).AsTask() );
     }
 
-    public async Task AnimateEnterAsync( ElementReference @ref, MotionProps props )
-    {
-        var module = await _moduleTask.Value;
-        await module.InvokeVoidAsync( $"{JavaScriptPrefix}.animateEnter", @ref, props );
-    }
+    public Task AnimateEnterAsync( ElementReference @ref, MotionProps props )
+        => InvokeAsync( "animateEnter", @ref, props );
 
-    public async Task AnimateExitAsync( ElementReference @ref, MotionProps props )
-    {
-        var module = await _moduleTask.Value;
-        await module.InvokeVoidAsync( $"{JavaScriptPrefix}.animateExit", @ref, props );
-    }
+    public Task AnimateExitAsync( ElementReference @ref, MotionProps props )
+        => InvokeAsync( "animateExit", @ref, props );
 
-    public async Task AnimateLayoutIdAsync( ElementReference @ref, MotionProps? props, string layoutId )
-    {
-        var module = await _moduleTask.Value;
-        await module.InvokeVoidAsync( $"{JavaScriptPrefix}.animateLayoutId", @ref, props, layoutId );
-    }
+    public Task AnimateLayoutIdAsync( ElementReference @ref, MotionProps? props, string layoutId )
+        => InvokeAsync( "animateLayoutId", @ref, props, layoutId );
 
     public async ValueTask DisposeAsync()
     {
         if( _moduleTask.IsValueCreated )
         {
+            try
+            {
+                var module = await _moduleTask.Value;
+                await module.DisposeAsync();
+            }
+            catch( JSDisconnectedException )
+            {
+                // The Blazor Server circuit is gone, and the module with it. There's nothing left to dispose.
+            }
+        }
+    }
+
+    private async Task InvokeAsync( string function, params object?[] args )
+    {
+        try
+        {
             var module = await _moduleTask.Value;
-            await module.DisposeAsync();
+            await module.InvokeVoidAsync( $"{JavaScriptPrefix}.{function}", args );
+        }
+        catch( JSDisconnectedException )
+        {
+            // The Blazor Server circuit is gone, usually because the page is being torn down while an enter or exit
+            // animation is starting. There's no page left to animate.
         }
     }
 }
