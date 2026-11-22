@@ -62,8 +62,19 @@ jobs:
       - name: Setup mise
         uses: jdx/mise-action@924e7c586e33d7d4bae9c14e26c5d22e2beb6e78 # v5
 
+      # The same checks build.yml runs on every PR, against the release tag, so a broken bundle step or a failing
+      # test can't publish a package.
+      - name: Build
+        run: dotnet build -c Release
+
+      - name: Test
+        run: dotnet test -c Release --no-build
+
       - name: Pack LumexUI.Motion
-        run: dotnet pack src/LumexUI.Motion.csproj -c Release --output nupkgs
+        run: dotnet pack src/LumexUI.Motion.csproj -c Release --no-build --output nupkgs
+
+      - name: Check the package contents
+        run: scripts/check-package.sh nupkgs/LumexUI.Motion.*.nupkg
 
       - name: Push to GitHub Packages
         run: >-
