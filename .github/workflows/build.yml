@@ -29,3 +29,7 @@ jobs:
 
       - name: Pack
         run: dotnet pack src/LumexUI.Motion.csproj -c Release --no-build --output nupkgs
+
+      # Fails if the bundled motion.js or a target framework's DLL is missing from the package.
+      - name: Check the package contents
+        run: scripts/check-package.sh nupkgs/LumexUI.Motion.*.nupkg
