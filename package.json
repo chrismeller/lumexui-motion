@@ -2,7 +2,7 @@
   "name": "lumexui-motion",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@10.28.0",
+  "packageManager": "pnpm@10.34.5",
   "scripts": {
     "build": "rollup -c"
   },
@@ -13,6 +13,6 @@
     "@rollup/plugin-node-resolve": "16.0.3",
     "@rollup/plugin-replace": "6.0.3",
     "@rollup/plugin-terser": "1.0.2",
-    "rollup": "4.68.7"
+    "rollup": "4.68.8"
   }
 }
