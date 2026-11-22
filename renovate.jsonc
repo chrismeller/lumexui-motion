@@ -11,7 +11,8 @@
     // includes updates to GitHub Actions, e.g. `uses: actions/checkout@v3`
     "customManagers:githubActionsVersions",
 
-    // automerge all non-major updates, but only if all status checks pass
+    // only sets how Renovate merges (as a PR, not a branch) when a rule turns automerge on; it doesn't turn it
+    // on. Nothing auto-merges until the repo has PR checks.
     ":automergePr"
   ],
 
@@ -25,7 +26,9 @@
   "osvVulnerabilityAlerts": true,
 
   // include a summary of all OSV vulnerabilities in the dependency dashboard, even if they don't have a fix version yet
-  "dependencyDashboardOSVVulnerabilitySummary": "all",
+  "dependencyDashboard": {
+    "osvVulnerabilitySummary": "all"
+  },
 
   // require manual approval for major updates, which are more likely to include breaking changes
   "major": {
@@ -90,14 +93,6 @@
       "description": "Group Rollup and its plugins into one PR",
       "groupName": "Rollup",
       "matchPackageNames": ["rollup", "@rollup/**"]
-    },
-    {
-      "description": "Auto-merge non-major GitHub Actions updates when ready",
-      "matchManagers": ["github-actions"],
-      "minimumReleaseAge": null,
-      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
-      "automerge": true,
-      "automergeType": "pr"
     },
     // Last, so it beats the fix/chore split config:best-practices applies through its own packageRules.
     {
