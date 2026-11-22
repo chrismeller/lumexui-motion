@@ -18,9 +18,14 @@ jobs:
       - name: Setup mise
         uses: jdx/mise-action@924e7c586e33d7d4bae9c14e26c5d22e2beb6e78 # v5
 
-      # Also installs the JS dependencies and bundles wwwroot/motion.js (see the csproj).
+      # Builds the library and the tests. Also installs the JS dependencies and bundles wwwroot/motion.js
+      # (see the csproj).
       - name: Build
-        run: dotnet build src/LumexUI.Motion.csproj -c Release
+        run: dotnet build -c Release
+
+      # xunit.v3 on Microsoft.Testing.Platform (global.json selects it for dotnet test).
+      - name: Test
+        run: dotnet test -c Release --no-build
 
       - name: Pack
         run: dotnet pack src/LumexUI.Motion.csproj -c Release --no-build --output nupkgs
