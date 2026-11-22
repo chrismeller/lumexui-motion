@@ -46,11 +46,12 @@
     "dependencies"
   ],
 
-  // release-please cuts releases from conventional commits, so every Renovate PR title and commit is
-  // "deps: …", which release-please releases as a patch under "Dependency Updates".
+  // release-please cuts releases from conventional commits. "deps:" releases a patch and is listed under
+  // "Dependency Updates"; "chore(deps):" is hidden and releases nothing. Updates default to chore(deps):, and the
+  // last packageRules title only the dependencies that end up in the .nupkg "deps:".
   "semanticCommits": "enabled",
-  "semanticCommitType": "deps",
-  "semanticCommitScope": null,
+  "semanticCommitType": "chore",
+  "semanticCommitScope": "deps",
 
   // mise's bare `dotnet` tool is invisible to Renovate's `mise` manager (it isn't in Renovate's mise
   // tooling table), so extract the pin as the same dep global.json's `sdk.version` is ("dotnet-sdk" /
@@ -94,10 +95,28 @@
       "groupName": "Rollup",
       "matchPackageNames": ["rollup", "@rollup/**"]
     },
-    // Last, so it beats the fix/chore split config:best-practices applies through its own packageRules.
+    // These three come last, so they beat the fix/chore split config:best-practices applies through its own
+    // packageRules.
     {
-      "description": "Title every update deps: for release-please",
+      "description": "Title every update chore(deps): by default, so release-please doesn't release for it",
       "matchPackageNames": ["*"],
+      "semanticCommitType": "chore",
+      "semanticCommitScope": "deps"
+    },
+    // What ships: the package references of the library itself (not tests or tooling), and the npm runtime
+    // dependencies that Rollup bundles into wwwroot/motion.js. Rollup and its plugins, the SDK, pnpm, mise tools
+    // and GitHub Actions only build it.
+    {
+      "description": "Title updates to shipped dependencies deps:, so release-please releases them",
+      "matchFileNames": ["src/**/*.csproj"],
+      "matchManagers": ["nuget"],
+      "semanticCommitType": "deps",
+      "semanticCommitScope": null
+    },
+    {
+      "description": "Title updates to the bundled npm runtime dependencies deps:, so release-please releases them",
+      "matchManagers": ["npm"],
+      "matchDepTypes": ["dependencies"],
       "semanticCommitType": "deps",
       "semanticCommitScope": null
     }
