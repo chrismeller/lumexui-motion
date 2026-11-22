@@ -28,6 +28,12 @@ jobs:
       - name: Setup mise
         uses: jdx/mise-action@924e7c586e33d7d4bae9c14e26c5d22e2beb6e78 # v5
 
+      # Vitest unit tests for the interop module in src/Scripts. The build below reuses node_modules.
+      - name: Test the JS module
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm test
+
       # Builds the library and the tests. Also installs the JS dependencies and bundles wwwroot/motion.js
       # (see the csproj).
       - name: Build
