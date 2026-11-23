@@ -28,6 +28,24 @@
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 	</PropertyGroup>
 
+	<!--
+		Package validation: `dotnet pack` fails when this package breaks the public API of the last release.
+		scripts/pack-baseline.sh packs that release from its tag into artifacts/baseline. CI always packs it first.
+		A local pack without it still runs the other package checks, and says the API comparison was skipped.
+		Bump MotionBaselineVersion after each release that's meant to break the API.
+	-->
+	<PropertyGroup>
+		<EnablePackageValidation>true</EnablePackageValidation>
+		<MotionBaselineVersion>0.2.0</MotionBaselineVersion>
+		<MotionBaselinePackage>$(MSBuildProjectDirectory)/../artifacts/baseline/LumexUI.Motion.$(MotionBaselineVersion).nupkg</MotionBaselinePackage>
+		<PackageValidationBaselinePath Condition="Exists('$(MotionBaselinePackage)')">$(MotionBaselinePackage)</PackageValidationBaselinePath>
+	</PropertyGroup>
+
+	<Target Name="CheckMotionBaseline" BeforeTargets="Pack" Condition="'$(EnablePackageValidation)' == 'true' And !Exists('$(MotionBaselinePackage)')">
+		<Error Condition="'$(CI)' == 'true'" Text="The package validation baseline $(MotionBaselinePackage) is missing. Run scripts/pack-baseline.sh before packing." />
+		<Warning Condition="'$(CI)' != 'true'" Text="Skipping the API comparison with LumexUI.Motion $(MotionBaselineVersion): run scripts/pack-baseline.sh to include it." />
+	</Target>
+
 	<ItemGroup>
 		<None Include="..\LICENSE" Pack="true" Visible="false" PackagePath="" />
 		<None Include="..\README.md" Pack="true" Visible="false" PackagePath="" />
