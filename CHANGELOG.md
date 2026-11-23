@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.2.0](https://github.com/chrismeller/lumexui-motion/compare/v0.1.1...v0.2.0) (2026-11-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* LumexUI.Motion now targets net10.0 only. Apps on .NET 8 or .NET 9 have to stay on 0.1.x.
+
+### Features
+
+* target net10.0 only ([d52d594](https://github.com/chrismeller/lumexui-motion/commit/d52d594cacc2f71fe59b54990b68282f36a97602))
+
 ## [0.1.1](https://github.com/chrismeller/lumexui-motion/compare/v0.1.0...v0.1.1) (2026-11-23)
 
 
