@@ -1,0 +1,13 @@
+@* Renders one keyed Motion per item inside AnimatePresence, so a test can add and remove children. *@
+<AnimatePresence>
+    @foreach( var item in Items )
+    {
+        <Motion Key="@item" Enter="@Enter" Exit="@Exit" class="item" data-key="@item">@item</Motion>
+    }
+</AnimatePresence>
+
+@code {
+    [Parameter] public IReadOnlyList<string> Items { get; set; } = [];
+    [Parameter] public object? Enter { get; set; }
+    [Parameter] public object? Exit { get; set; }
+}
