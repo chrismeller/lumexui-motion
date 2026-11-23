@@ -4,7 +4,8 @@
   "type": "module",
   "packageManager": "pnpm@10.34.5",
   "scripts": {
-    "build": "rollup -c"
+    "build": "rollup -c",
+    "test": "vitest run"
   },
   "dependencies": {
     "motion": "14.14.0"
@@ -13,6 +14,8 @@
     "@rollup/plugin-node-resolve": "16.0.3",
     "@rollup/plugin-replace": "6.0.3",
     "@rollup/plugin-terser": "1.0.2",
-    "rollup": "4.68.8"
+    "jsdom": "31.0.1",
+    "rollup": "4.68.8",
+    "vitest": "5.1.1"
   }
 }
